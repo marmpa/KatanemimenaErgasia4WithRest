@@ -40,10 +40,8 @@ import javax.ws.rs.core.Response;
 //gridlayout ωστε να ταιριαζουν ακριβως καθε φορα τα αντικείμενα στο παράθυρο
 public class RestGui extends JFrame {//Κλάση Gui που κάνει extend το Frame για να δημιουργήσω το παράθυρο
 
-
     //res  = target_put.request().header("name", "tom").header("friends_name", "jim").put(Entity.json(restnew));
     //------------ΝΑ ΔΩ ΤΗΝ ΠΑΡΑΠΑΝΩ ΓΡΑΜΜΗ-------------
-
     public final int windowWidth = 800;//οι διαστάσεις του παραθύρου
     public final int windowHeight = 800;
     private Container guiPane;//ένα container που χρειασημοιποιώ σε κάθε συνάρτηση ώστε να αλλάζω το περιεχόμενο του παραθύρου
@@ -60,9 +58,13 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
     String headVal;
 
     private String currentName = "tom";//ενα αντικείμενο τυπου string
-
     private RestMessage rest;
-    private JTextField name_JTextField, username_JTextField, id_JTextField, friends_name_JTextField, message_JTextField;
+    
+    private JTextField name_JTextField, surname_JTextField, username_JTextField, id_JTextField, friends_name_JTextField, message_JTextField, description_JTextField, country_JTextField, city_JTextField;//φτίαχνω νέο αντικείμενο JTextField;
+    DateFormat DF = new SimpleDateFormat("dd/mm/yyyy");//οριζω βασικο format για την ημερομηνια
+    JFormattedTextField birthday_JTextField = new JFormattedTextField(DF);
+    JComboBox gender_JComboBox;//φτιάχνω JComboBox αντικείμενο
+    Date date;
 
     public RestGui() {//constructor της κλάσης
         this.setSize(windowWidth, windowHeight);//θέτω το μήκος και πλάτος του παραθύρου
@@ -84,13 +86,12 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
         GridLayout login_BorderLayout = new GridLayout(3, 2, 20, 20);//θέτω το layout του παραθύρου
         this.guiPane.setLayout(login_BorderLayout);//το θέτω στο παραπάνω pane
         RestMessage rest = new RestMessage();
-        res = target_post.request(MediaType.APPLICATION_JSON).header("option", "drop").post(Entity.json(rest));//------------------αυτη η γραμμη την τρέχουμε 
+        //res = target_post.request(MediaType.APPLICATION_JSON).header("option", "drop").post(Entity.json(rest));//------------------αυτη η γραμμη την τρέχουμε 
         //μόνο την πρωτη φορα και μετα την βαζουμε σε σχολιο για να μην σβηνει καθε φορα τις εγγραφες..(γιατι αν θελουμε να βαλουμε πολλους χρηστες και να 
         //τους κανουμε φιλους μεταξυ τους εφοσον γινεται μονο ενα register καθε φορα πρέπει να προηγούμενα κάπως να τα κρατάμε--------------------------------
 
         login_JLabel1 = new JLabel(login_JLabel1Text, JLabel.CENTER);//φτιάχνω ένα νέο αντικείμενο τύπου JLabel και του βάζω σαν text το login_JLavel1Text
         //login_JLabel1.setSize(250,250);
-
 
         login_button.addActionListener(//βάζω actionListener ο οποίος ακούει οταν πατήσει ο χρήστης enter στο textfield
                 new ActionListener() {//νέο αντικείμενο ActionListener
@@ -120,7 +121,6 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
 
     public void Login() {
         JLabel name, username;//δηλώνω δύο αντικείμενα JLabel
-        JTextField username_JTextField;//δηλώνω JTextField αντικείμενο
         JButton login_JButton, back_JButton;//δημιουργώ 2 κουμπιάα
         //Κώδικας που χρειάζεται σε κάθε παράθυρο
         this.getContentPane().removeAll();//αφαιρώ τα πάντα απο το Frame
@@ -161,81 +161,73 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
     }
 
     public void Register() {
-        try {
-            JLabel name, surname, username, birthday, gender, description, country, city;//δηλώνω δύο αντικείμενα JLabel
-            JTextField surname_JTextField, username_JTextField, description_JTextField, country_JTextField, city_JTextField;//δηλώνω JTextField αντικείμενο
-            JComboBox gender_JComboBox;//φτιάχνω JComboBox αντικείμενο
-            JButton register_JButton, back_JButton;//δημιουργώ 2 κουμπιά
-            DateFormat DF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");//οριζω βασικο format για την ημερομηνια
-            JFormattedTextField birthday_JTextField;
-            //Κώδικας που χρειάζεται σε κάθε παράθυρο
-            this.getContentPane().removeAll();//αφαιρώ τα πάντα απο το Frame
-            this.guiPane = this.getContentPane();
-            GridLayout NewReservation_GridLayout = new GridLayout(9, 2);
-            this.guiPane.setLayout(NewReservation_GridLayout);
-            //.......................................
-            name = new JLabel("Όνομα", SwingConstants.CENTER);//βάζω κείμενο στο label και το δημιουργώ
-            surname = new JLabel("Επώνυμο", SwingConstants.CENTER);//παρομοίως
-            username = new JLabel("Ψευδώνυμο", SwingConstants.CENTER);//παρομοίως
-            birthday = new JLabel("Γενέθλια", SwingConstants.CENTER);//παρομοίως
-            gender = new JLabel("Φύλο", SwingConstants.CENTER);//παρομοίως
-            description = new JLabel("Περιγραφή", SwingConstants.CENTER);//παρομοίως
-            country = new JLabel("Χώρα", SwingConstants.CENTER);//παρομοίως
-            city = new JLabel("Πόλη", SwingConstants.CENTER);//παρομοίως
-            gender_JComboBox = new JComboBox(new String[] //φτίαχνω ένα JComboBox και σαν επιλογή του βάζω όλα τα αντικείμενα που μπορεί να πάρει
-            {"Αντρας", "Γυναίκα"});
-            name_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            surname_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            username_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            birthday_JTextField = new JFormattedTextField(DF);
-            description_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            country_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            city_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            String name_str = name_JTextField.getText();
-            String surname_str = surname_JTextField.getText();
-            String username_str = username_JTextField.getText();
-            Date birthday_str = DF.parse(birthday_JTextField.getText());
-            String gender_str = gender_JComboBox.getSelectedItem().toString();
-            String description_str = description_JTextField.getText();
-            String country_str = country_JTextField.getText();
-            String city_str = city_JTextField.getText();
-            rest = new RestMessage(name_str, surname_str, username_str, birthday_str, gender_str, description_str, country_str, city_str);
-            register_JButton = new JButton("Εγγραφή");//φτίαχνω νέο αντικείμενο JButton και το βάζω όνομα
-            back_JButton = NewBackButton();//καλώ την συνάρτηση NewBackButton() που επιστρέφει ένα έτοιμο κουμπί
-            register_JButton.setHorizontalAlignment(SwingConstants.CENTER);
-            register_JButton.addActionListener(//βάζω actionlistener
-                    new ActionListener() {
-                public void actionPerformed(ActionEvent e) {//αν πατηθεί το κουμπί
-                    res = target_post.request(MediaType.APPLICATION_JSON).header("option", "register").post(Entity.json(rest));
-                    currentName = name_JTextField.getText();
-                    MainMenu(currentName);
+        JLabel name, surname, username, birthday, gender, description, country, city;//δηλώνω δύο αντικείμενα JLabel
+        JButton register_JButton, back_JButton;//δημιουργώ 2 κουμπιά
+        //Κώδικας που χρειάζεται σε κάθε παράθυρο
+        this.getContentPane().removeAll();//αφαιρώ τα πάντα απο το Frame
+        this.guiPane = this.getContentPane();
+        GridLayout NewReservation_GridLayout = new GridLayout(9, 2);
+        this.guiPane.setLayout(NewReservation_GridLayout);
+        //.......................................
+        name = new JLabel("Όνομα", SwingConstants.CENTER);//βάζω κείμενο στο label και το δημιουργώ
+        surname = new JLabel("Επώνυμο", SwingConstants.CENTER);//παρομοίως
+        username = new JLabel("Ψευδώνυμο", SwingConstants.CENTER);//παρομοίως
+        birthday = new JLabel("Γενέθλια", SwingConstants.CENTER);//παρομοίως
+        gender = new JLabel("Φύλο", SwingConstants.CENTER);//παρομοίως
+        description = new JLabel("Περιγραφή", SwingConstants.CENTER);//παρομοίως
+        country = new JLabel("Χώρα", SwingConstants.CENTER);//παρομοίως
+        city = new JLabel("Πόλη", SwingConstants.CENTER);//παρομοίως
+        gender_JComboBox = new JComboBox(new String[] //φτίαχνω ένα JComboBox και σαν επιλογή του βάζω όλα τα αντικείμενα που μπορεί να πάρει
+        {"Αντρας", "Γυναίκα"});
+        name_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        surname_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        username_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        birthday_JTextField = new JFormattedTextField(DF);
+        description_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        country_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        city_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        birthday_JTextField = new JFormattedTextField();
+
+
+        register_JButton = new JButton("Εγγραφή");//φτίαχνω νέο αντικείμενο JButton και το βάζω όνομα
+        back_JButton = NewBackButton();//καλώ την συνάρτηση NewBackButton() που επιστρέφει ένα έτοιμο κουμπί
+        register_JButton.setHorizontalAlignment(SwingConstants.CENTER);
+        register_JButton.addActionListener(//βάζω actionlistener
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {try {
+                //αν πατηθεί το κουμπί
+                date = DF.parse(birthday_JTextField.getText());
+                rest = new RestMessage(name_JTextField.getText(), surname_JTextField.getText(), username_JTextField.getText(), date, gender_JComboBox.getSelectedItem().toString(), description_JTextField.getText(), country_JTextField.getText(), city_JTextField.getText());
+                res = target_post.request(MediaType.APPLICATION_JSON).header("option", "register").post(Entity.json(rest));
+                currentName = name_JTextField.getText();
+                MainMenu(currentName);
+                } catch (ParseException ex) {
+                    Logger.getLogger(RestGui.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            );
-            this.guiPane.add(name);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(name_JTextField);//παρομοίως
-            this.guiPane.add(surname);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(surname_JTextField);//παρομοίως
-            this.guiPane.add(username);//παρομοίως
-            this.guiPane.add(username_JTextField);//παρομοίως
-            this.guiPane.add(birthday);//παρομοίως
-            this.guiPane.add(birthday_JTextField);//παρομοίως
-            this.guiPane.add(gender);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(gender_JComboBox);//παρομοίως
-            this.guiPane.add(description);//παρομοίως
-            this.guiPane.add(description_JTextField);//παρομοίως
-            this.guiPane.add(country);//παρομοίως
-            this.guiPane.add(country_JTextField);//παρομοίως
-            this.guiPane.add(city);//παρομοίως
-            this.guiPane.add(city_JTextField);//παρομοίως
-            this.guiPane.add(register_JButton);//παρομοίως
-            this.guiPane.add(back_JButton);//παρομοίως
-            //Κώδικας που χρειάζεται σε κάθε παράθυρο
-            this.setContentPane(this.guiPane);
-            //.......................................
-        } catch (ParseException ex) {
-            Logger.getLogger(RestGui.class.getName()).log(Level.SEVERE, null, ex);
         }
+        );
+        this.guiPane.add(name);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(name_JTextField);//παρομοίως
+        this.guiPane.add(surname);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(surname_JTextField);//παρομοίως
+        this.guiPane.add(username);//παρομοίως
+        this.guiPane.add(username_JTextField);//παρομοίως
+        this.guiPane.add(birthday);//παρομοίως
+        this.guiPane.add(birthday_JTextField);//παρομοίως
+        this.guiPane.add(gender);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(gender_JComboBox);//παρομοίως
+        this.guiPane.add(description);//παρομοίως
+        this.guiPane.add(description_JTextField);//παρομοίως
+        this.guiPane.add(country);//παρομοίως
+        this.guiPane.add(country_JTextField);//παρομοίως
+        this.guiPane.add(city);//παρομοίως
+        this.guiPane.add(city_JTextField);//παρομοίως
+        this.guiPane.add(register_JButton);//παρομοίως
+        this.guiPane.add(back_JButton);//παρομοίως
+        //Κώδικας που χρειάζεται σε κάθε παράθυρο
+        this.setContentPane(this.guiPane);
+        //.......................................
     }
 
     public void MainMenu(String userName) {
@@ -292,7 +284,8 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
             public void actionPerformed(ActionEvent e) {//Εάν πατειθεί το συγκεκριμένο κουμπί τότε μπαίνει στην φόρμα για έλενχο κράτησης
                 //δειχνει κατευθειαν απο εδω τους φιλους γιατι εχουμε ηδη το name που θελει η συναρτηση 
                 res = target_get.queryParam("name", currentName).queryParam("option", "showFriends").request().get();
-                JOptionPane.showMessageDialog(getContentPane(),res);
+                String result = res.readEntity(String.class);
+                JOptionPane.showMessageDialog(getContentPane(), result);
             }
         }
         );
@@ -330,7 +323,8 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
             public void actionPerformed(ActionEvent e) {//Εάν πατειθεί το συγκεκριμένο κουμπί τότε μπαίνει στην φόρμα advanced menu
                 //δειχνει κατευθειαν απο εδω τα post γιατι εχουμε ηδη το name που θελει η συναρτηση 
                 res = target_get.queryParam("name", currentName).queryParam("option", "topPosts").request().get();
-                JOptionPane.showMessageDialog(getContentPane(),res);
+                String result = res.readEntity(String.class);
+                JOptionPane.showMessageDialog(getContentPane(), result);
             }
         }
         );
@@ -360,78 +354,69 @@ public class RestGui extends JFrame {//Κλάση Gui που κάνει extend �
     }
 
     public void UpdateProfil() {
-        try {
-            JLabel name, surname, username, birthday, gender, description, country, city;//δηλώνω δύο αντικείμενα JLabel
-            JTextField name_JTextField, surname_JTextField, username_JTextField, birthday_JTextField, description_JTextField, country_JTextField, city_JTextField;//δηλώνω JTextField αντικείμενο
-            JComboBox gender_JComboBox;//φτιάχνω JComboBox αντικείμενο
-            JButton update_JButton, back_JButton;//δημιουργώ 2 κουμπιά
-            DateFormat DF = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy");//οριζω βασικο format για την ημερομηνια
-            //Κώδικας που χρειάζεται σε κάθε παράθυρο
-            this.getContentPane().removeAll();//αφαιρώ τα πάντα απο το Frame
-            this.guiPane = this.getContentPane();
-            GridLayout NewReservation_GridLayout = new GridLayout(9, 2);
-            this.guiPane.setLayout(NewReservation_GridLayout);
-            //.......................................
-            name = new JLabel("Όνομα", SwingConstants.CENTER);//βάζω κείμενο στο label και το δημιουργώ
-            surname = new JLabel("Επώνυμο", SwingConstants.CENTER);//παρομοίως
-            username = new JLabel("Ψευδώνυμο", SwingConstants.CENTER);//παρομοίως
-            birthday = new JLabel("Γενέθλια", SwingConstants.CENTER);//παρομοίως
-            gender = new JLabel("Φύλο", SwingConstants.CENTER);//παρομοίως
-            description = new JLabel("Περιγραφή", SwingConstants.CENTER);//παρομοίως
-            country = new JLabel("Χώρα", SwingConstants.CENTER);//παρομοίως
-            city = new JLabel("Πόλη", SwingConstants.CENTER);//παρομοίως
-            gender_JComboBox = new JComboBox(new String[] //φτίαχνω ένα JComboBox και σαν επιλογή του βάζω όλα τα αντικείμενα που μπορεί να πάρει
-            {"Αντρας", "Γυναίκα"});
-            name_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            surname_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            username_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            birthday_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            description_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            country_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            city_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
-            String name_str = name_JTextField.getText();
-            String surname_str = surname_JTextField.getText();
-            String username_str = username_JTextField.getText();
-            Date birthday_str = DF.parse(birthday_JTextField.getText());
-            String gender_str = gender_JComboBox.getSelectedItem().toString();
-            String description_str = description_JTextField.getText();
-            String country_str = country_JTextField.getText();
-            String city_str = city_JTextField.getText();
-            rest = new RestMessage(name_str, surname_str, username_str, birthday_str, gender_str, description_str, country_str, city_str);
-            update_JButton = new JButton("Ανανέωση στοιχείων");//φτίαχνω νέο αντικείμενο JButton και το βάζω όνομα
-            back_JButton = NewBackButton();//καλώ την συνάρτηση NewBackButton() που επιστρέφει ένα έτοιμο κουμπί
-            update_JButton.setHorizontalAlignment(SwingConstants.CENTER);
-            update_JButton.addActionListener(//βάζω actionlistener
-                    new ActionListener() {
-                public void actionPerformed(ActionEvent e) {//αν πατηθεί το κουμπίrest = new RestMessage(name_str, surname_str, username_str, birthday_str, gender_str, description_str, country_str, city_str);
-                    res = target_put.request().header("name", currentName).put(Entity.json(rest));
+        JLabel name, surname, username, birthday, gender, description, country, city;//δηλώνω δύο αντικείμενα JLabel
+        JButton update_JButton, back_JButton;//δημιουργώ 2 κουμπιά
+        //Κώδικας που χρειάζεται σε κάθε παράθυρο
+        this.getContentPane().removeAll();//αφαιρώ τα πάντα απο το Frame
+        this.guiPane = this.getContentPane();
+        GridLayout NewReservation_GridLayout = new GridLayout(9, 2);
+        this.guiPane.setLayout(NewReservation_GridLayout);
+        //.......................................
+        name = new JLabel("Όνομα", SwingConstants.CENTER);//βάζω κείμενο στο label και το δημιουργώ
+        surname = new JLabel("Επώνυμο", SwingConstants.CENTER);//παρομοίως
+        username = new JLabel("Ψευδώνυμο", SwingConstants.CENTER);//παρομοίως
+        birthday = new JLabel("Γενέθλια", SwingConstants.CENTER);//παρομοίως
+        gender = new JLabel("Φύλο", SwingConstants.CENTER);//παρομοίως
+        description = new JLabel("Περιγραφή", SwingConstants.CENTER);//παρομοίως
+        country = new JLabel("Χώρα", SwingConstants.CENTER);//παρομοίως
+        city = new JLabel("Πόλη", SwingConstants.CENTER);//παρομοίως
+        gender_JComboBox = new JComboBox(new String[] //φτίαχνω ένα JComboBox και σαν επιλογή του βάζω όλα τα αντικείμενα που μπορεί να πάρει
+        {"Αντρας", "Γυναίκα"});
+        name_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        surname_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        username_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        birthday_JTextField = new JFormattedTextField(DF);//φτίαχνω νέο αντικείμενο JTextField
+        description_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        country_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        city_JTextField = new JTextField();//φτίαχνω νέο αντικείμενο JTextField
+        
+        update_JButton = new JButton("Ανανέωση στοιχείων");//φτίαχνω νέο αντικείμενο JButton και το βάζω όνομα
+        back_JButton = NewBackButton();//καλώ την συνάρτηση NewBackButton() που επιστρέφει ένα έτοιμο κουμπί
+        update_JButton.setHorizontalAlignment(SwingConstants.CENTER);
+        update_JButton.addActionListener(//βάζω actionlistener
+                new ActionListener() {
+            public void actionPerformed(ActionEvent e) {try {
+                //αν πατηθεί το κουμπί
+                date = DF.parse(birthday_JTextField.getText());
+                rest = new RestMessage(name_JTextField.getText(), surname_JTextField.getText(), username_JTextField.getText(), date, gender_JComboBox.getSelectedItem().toString(), description_JTextField.getText(), country_JTextField.getText(), city_JTextField.getText());
+                res = target_put.request().header("name", currentName).put(Entity.json(rest));
+                } catch (ParseException ex) {
+                    Logger.getLogger(RestGui.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            );
-            this.guiPane.add(name);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(name_JTextField);//παρομοίως
-            this.guiPane.add(surname);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(surname_JTextField);//παρομοίως
-            this.guiPane.add(username);//παρομοίως
-            this.guiPane.add(username_JTextField);//παρομοίως
-            this.guiPane.add(birthday);//παρομοίως
-            this.guiPane.add(birthday_JTextField);//παρομοίως
-            this.guiPane.add(gender);//προσθέτει στον καμβά το αντικείμενο
-            this.guiPane.add(gender_JComboBox);//παρομοίως
-            this.guiPane.add(description);//παρομοίως
-            this.guiPane.add(description_JTextField);//παρομοίως
-            this.guiPane.add(country);//παρομοίως
-            this.guiPane.add(country_JTextField);//παρομοίως
-            this.guiPane.add(city);//παρομοίως
-            this.guiPane.add(city_JTextField);//παρομοίως
-            this.guiPane.add(update_JButton);//παρομοίως
-            this.guiPane.add(back_JButton);//παρομοίως
-            //Κώδικας που χρειάζεται σε κάθε παράθυρο
-            this.setContentPane(this.guiPane);
-            //.......................................
-        } catch (ParseException ex) {
-            Logger.getLogger(RestGui.class.getName()).log(Level.SEVERE, null, ex);
         }
+        );
+        this.guiPane.add(name);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(name_JTextField);//παρομοίως
+        this.guiPane.add(surname);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(surname_JTextField);//παρομοίως
+        this.guiPane.add(username);//παρομοίως
+        this.guiPane.add(username_JTextField);//παρομοίως
+        this.guiPane.add(birthday);//παρομοίως
+        this.guiPane.add(birthday_JTextField);//παρομοίως
+        this.guiPane.add(gender);//προσθέτει στον καμβά το αντικείμενο
+        this.guiPane.add(gender_JComboBox);//παρομοίως
+        this.guiPane.add(description);//παρομοίως
+        this.guiPane.add(description_JTextField);//παρομοίως
+        this.guiPane.add(country);//παρομοίως
+        this.guiPane.add(country_JTextField);//παρομοίως
+        this.guiPane.add(city);//παρομοίως
+        this.guiPane.add(city_JTextField);//παρομοίως
+        this.guiPane.add(update_JButton);//παρομοίως
+        this.guiPane.add(back_JButton);//παρομοίως
+        //Κώδικας που χρειάζεται σε κάθε παράθυρο
+        this.setContentPane(this.guiPane);
+        //.......................................
     }
 
     public void AddFriend() {
