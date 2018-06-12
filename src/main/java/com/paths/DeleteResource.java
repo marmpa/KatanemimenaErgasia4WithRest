@@ -27,12 +27,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-/**
- * REST Web Service
- *
- * @author Marios
- */
-@Path("/Delete")
+
+@Path("/Delete")//Δηλώνει το που θα βρίσκεται αυτό το resource
 public class DeleteResource 
 {
 
@@ -41,32 +37,27 @@ public class DeleteResource
     private Statement stat;
     private Connection conn;
 
-    /**
-     * Creates a new instance of DeleteResource
-     */
+    
     public DeleteResource() {}
 
-    /**
-     * Retrieves representation of an instance of com.paths.DeleteResource
-     * @return an instance of java.lang.String
-     */
-    @DELETE
-    @Produces("application/json")
-    public Response Delete(@HeaderParam("mes") String jsonData) 
+    
+    @DELETE//annotation το οποίο λέει στο rest οτι πρόκειτε για τύπου delete
+    @Produces("application/json")//παράγει json δεδομένα
+    public Response Delete(@HeaderParam("mes") String jsonData) //οτι το jsonData το παίρνει απο το header που δίνεται στο κάλεσμα
     {
         try 
         {
-            EstablishDbConnection();
-            ObjectMapper mapper = new ObjectMapper();
+            EstablishDbConnection();//σύνδεση με τη βάση
+            ObjectMapper mapper = new ObjectMapper();//mapper το οποίο χρησιμοποιήτε παρακάτω για μετατροπή απο json σε RestMessage
             RestMessage rest=null;
             try
             {
-                rest = mapper.readValue(jsonData, RestMessage.class);
-                return deleteFriend(rest);
+                rest = mapper.readValue(jsonData, RestMessage.class);//δοκιμάζει να κάνει την μετατροπή σε RestMessage
+                return deleteFriend(rest);//αν πετύχει καλεί την DeleteFriend
             }
             catch (IOException ex)
             {
-                return deletePost(jsonData);
+                return deletePost(jsonData);//αν υπάρχει ioexception δοκιμάζει να καλέσει την deletePost
             }
             catch(Exception ex)
             {
@@ -86,11 +77,13 @@ public class DeleteResource
     
     public Response deleteFriend(RestMessage rest)
     {
-        try {
+        try 
+        {
+            //δημηουργεί το string το οποίο θα τρέξει στη βάση
             String message = "Delete from friends where friend_send='" + rest.getName() + "' and friends_username='" + rest.getUser_received()+"'";
-            stat.executeUpdate(message);
+            stat.executeUpdate(message);//τρέχει στη βάση την εντολή
             System.out.println("Query executed : " + message);
-            return Response.status(Response.Status.NO_CONTENT).build();
+            return Response.status(Response.Status.NO_CONTENT).build();//επιστρέφει μία απάντηση
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -99,7 +92,7 @@ public class DeleteResource
     
     public Response deletePost(String id)
     {
-        try 
+        try //παρομοίως αλλα διαγράφει κάτι
         {
             String message = "Delete from posts where id='" + id + "'";
             System.out.println("Query executed : " + message);
@@ -114,13 +107,13 @@ public class DeleteResource
     
     public void EstablishDbConnection() throws ClassNotFoundException, SQLException
     {
-        Class.forName("org.sqlite.JDBC");
+        Class.forName("org.sqlite.JDBC");//κάνει την σύνδεση στη βάση
         conn = DriverManager.getConnection("jdbc:sqlite:chat.db");
         stat = conn.createStatement();
     }
     
     public void DestroyDbConnection() throws SQLException
-    {
+    {//κλήνει την σύνδεσει
         stat.close();
         conn.close();
     }

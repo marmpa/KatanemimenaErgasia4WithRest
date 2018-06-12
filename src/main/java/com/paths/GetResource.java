@@ -46,7 +46,7 @@ import javax.ws.rs.core.Response;
  *
  * @author Marios
  */
-@Path("/Get")
+@Path("/Get")//Το path που θα βρίσκεται το resource
 public class GetResource 
 {
     
@@ -55,27 +55,22 @@ public class GetResource
     Statement stat,statNew;
     Connection conn;
 
-    /**
-     * Creates a new instance of Conf1
-     */
+    
     public GetResource() {
     }
 
-    /**
-     * Retrieves representation of an instance of com.test.GetResource
-     * @return an instance of java.lang.String
-     */
+    
     
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getJson5(@QueryParam("name") @DefaultValue("") String name,@QueryParam("option")String option)
-    {
+    {//τα δεδομένα που δέχεται σάν query parameters
         try 
         {
-            EstablishDbConnection();
+            EstablishDbConnection();//κάνε σύνδεση στη βάση
             
             switch(option)
-            {
+            {//ανάλογα με το τι δώσει ο χρήστης καλή την αντοίστιχη συνάρτηση
                 case "showFriends":
                     return showFriends(name);
                 case "showPost":
@@ -103,10 +98,10 @@ public class GetResource
         String str = "";
         String fr_us, na, su, us,ge , de, ci, co;
         java.util.Date bi; 
-        ArrayList<RestMessage> AR= new ArrayList<>();
+        ArrayList<RestMessage> AR= new ArrayList<>();//ενα arraylist που περιέχει όλα τα δεδομένα που θα επιστραφούν
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
         try
-        {
+        {//κάνει το query και έπειτα βρίσκει και δημιουργεί ολους τους φίλους
             records = stat.executeQuery("Select friends_username from friends WHERE friend_send='" + name + "'");
             while (records.next()) 
             {
@@ -127,23 +122,24 @@ public class GetResource
                     AR.add(new RestMessage(na,su,us,bi,ge,de,co,ci));
                 }
             }
-            DestroyDbConnection();
+            DestroyDbConnection();//κλήνει την σύνδεση
             ObjectMapper mapper = new ObjectMapper();
             SimpleModule module = new SimpleModule();
             module.addSerializer(java.util.Date.class, new JsonDateSerializer());
-            mapper.registerModule(module);
-            String result = mapper.writeValueAsString(AR);
+            mapper.registerModule(module);//βάζουμε ένα module για το πως μετατρέπει το date σε json
+            String result = mapper.writeValueAsString(AR);//μετατρέπω σε string
             //System.out.println(result);
-            return Response.status(Response.Status.OK).entity(result).build();
+            return Response.status(Response.Status.OK).entity(result).build();//επιστρέφουμε απάντηση
             
-        }
-        catch (SQLException ex) {
+        }catch (SQLException ex) {
             System.out.println("Error in showfriend selecting");
             Logger.getLogger(GetResource.class.getName()).log(Level.SEVERE, null, ex);
         }
-         catch (JsonProcessingException ex) {
-                //Logger.getLogger(GetResource.class.getName()).log(Level.SEVERE, null, ex);
-            } catch (ParseException ex) {
+        catch(JsonProcessingException ex)
+        {
+        //Logger.getLogger(GetResource.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        catch (ParseException ex) {
             Logger.getLogger(GetResource.class.getName()).log(Level.SEVERE, null, ex);
         }
         
@@ -155,7 +151,7 @@ public class GetResource
     public Response showPost(String name)
     {
         ResultSet records = null;
-        ArrayList<RestMessage> AR= new ArrayList<>();
+        ArrayList<RestMessage> AR= new ArrayList<>();//παρομοίως με πάνω
         try {
             records = stat.executeQuery("SELECT * from posts WHERE user_posted='" + name + "'");
 
@@ -190,7 +186,7 @@ public class GetResource
         String str = "";
         ArrayList<RestMessage> AR= new ArrayList<>();
         DateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
-        try {
+        try {//βρίσκει 10 post και τα βάζει στο arraylist
             records = stat.executeQuery("SELECT * from posts WHERE user_posted='" + name + "' LIMIT 10");
             try {
                 RestMessage rest;
@@ -230,6 +226,7 @@ public class GetResource
     
     public void EstablishDbConnection() throws ClassNotFoundException, SQLException
     {
+        //κάνει σύνδεση στη βάση
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite:chat.db");
         stat = conn.createStatement();
@@ -238,6 +235,7 @@ public class GetResource
     
     public void DestroyDbConnection() throws SQLException
     {
+        //κλήνει την σύνδεση
         stat.close();
         statNew.close();
         conn.close();

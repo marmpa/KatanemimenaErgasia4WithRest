@@ -36,35 +36,33 @@ import javax.ws.rs.core.Response;
  *
  * @author Marios
  */
-@Path("/Put")
+@Path("/Put")//το που βρίσκεται το resource
 public class PutResource {
 
     @Context
     private UriInfo context;
     private Statement stat;
     private Connection conn;
-    /**
-     * Creates a new instance of PutResource
-     */
+    
     public PutResource() {
     }
 
     
-    @PUT
-    @Consumes(MediaType.APPLICATION_JSON)
+    @PUT//οτι χειρήζεται ερωτήματα τύπου put
+    @Consumes(MediaType.APPLICATION_JSON)//καταναλώνει json data
     public Response putJson(String jsonData,@HeaderParam("friends_name") @DefaultValue("") String friends_name, @HeaderParam("name") @DefaultValue("") String name) 
-    {
+    {//τα διάφορα parameters που μπορεί να δοθούν
         try 
         {
-            EstablishDbConnection();
+            EstablishDbConnection();//σύνδεεση στη βάση
             ObjectMapper mapper = new ObjectMapper();
             SimpleModule module = new SimpleModule();
             module.addDeserializer(Date.class, new JsonDateDeserializer());
             mapper.registerModule(module);
             
-            RestMessage rest = mapper.readValue(jsonData, RestMessage.class);
+            RestMessage rest = mapper.readValue(jsonData, RestMessage.class);//μετατρέπει το json σε αρχείο
             
-            return updateProfile(name ,friends_name, rest);
+            return updateProfile(name ,friends_name, rest);//αν προχωρίσει έως εδώ τότε κάλεσε το profile
         } 
         catch (ClassNotFoundException ex) 
         {
@@ -75,22 +73,22 @@ public class PutResource {
         } catch (IOException ex) 
         {
             //Logger.getLogger(PutResource.class.getName()).log(Level.SEVERE, null, ex);
-            return updatePost(name, jsonData);
+            return updatePost(name, jsonData);//αλλιώς κάλεσε την update post
         }
-        return Response.status(Response.Status.NOT_ACCEPTABLE).build();
+        return Response.status(Response.Status.NOT_ACCEPTABLE).build();//επέστρέψε το response
     }
     
     public Response updateProfile(String name, String friends_name, RestMessage msg)
     {
-        try {
+        try {//sql ερώτημα για update profile
             String message = "UPDATE users SET name='" + msg.getName() + "', surname='" + msg.getSurname() + "', username='" + msg.getUsername() + "', birthday='" + msg.getDate() + "', gender='" + msg.getGender() + "', description='" + msg.getDescription() + "', country='" + msg.getCountry() + "', city='" + msg.getCity() + "' WHERE name='" + friends_name + "'";
             String message2 = "UPDATE friends SET friends_username='" + msg.getUsername() + "' WHERE friend_send='" + name + "'";
             stat.executeUpdate(message); 
             stat.executeUpdate(message2); 
             System.out.println("Query executed : " + message);
             System.out.println("Query executed : " + message2);
-            DestroyDbConnection();
-            return Response.status(Response.Status.OK).build();
+            DestroyDbConnection();//κλήνει την σύνδεση
+            return Response.status(Response.Status.OK).build();//επιστρέφει το response
         } catch (SQLException ex) {
             System.out.println("Exception");
             Logger.getLogger(PutResource.class.getName()).log(Level.SEVERE, null, ex);
@@ -100,7 +98,7 @@ public class PutResource {
 
     public Response updatePost(String id, String post)
     {
-        try {
+        try {//παρομοίως αλλα για τα post
             Date date = new Date();
             String message = "UPDATE posts SET date='" + date + "', message='" + post + "' WHERE id='" + id + "'";
             stat.executeUpdate(message);
@@ -113,14 +111,14 @@ public class PutResource {
     }
     
     public void EstablishDbConnection() throws ClassNotFoundException, SQLException
-    {
+    {//κάνει σύνδεση με τη βάση
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite:chat.db");
         stat = conn.createStatement();
     }
     
     public void DestroyDbConnection() throws SQLException
-    {
+    {//αποσυνδέει τη βάση
         stat.close();
         conn.close();
     }

@@ -11,7 +11,7 @@ import java.util.Date;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement
-public class RestMessage implements Serializable {
+public class RestMessage implements Serializable {//τα διάφορα ορίσματα
     private String name;
     private String surname;
     private String username;
@@ -24,6 +24,7 @@ public class RestMessage implements Serializable {
     private String id;
     private Date date;
 
+    //Οι 3 constructors που θα χρειαστούμε ανάλογα την περίπτωση
     public RestMessage(String id ,String name,String user_received, String post) {
         this.id = id;
         this.name = name;
@@ -98,10 +99,6 @@ public class RestMessage implements Serializable {
     }
     
     //Setters Παρακάτω
-    //................
-    //................
-    //................
-    //................
     public void setName(String name) {
         this.name = name;
     }
@@ -142,7 +139,7 @@ public class RestMessage implements Serializable {
         this.id = id;
     }
     
-    @JsonDeserialize(using = JsonDateDeserializer.class)
+    @JsonDeserialize(using = JsonDateDeserializer.class)//για να κάνει μετατροπή απο json σε date
     public void setDate(Date date) 
     {
         this.date = date;

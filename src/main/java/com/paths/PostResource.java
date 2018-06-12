@@ -32,24 +32,19 @@ import javax.ws.rs.core.Response;
  *
  * @author Marios
  */
-@Path("/Post")
+@Path("/Post")//δείχνει το που βρίσκεται το resource
 public class PostResource {
 
     @Context
     private UriInfo context;
     private Statement stat;
     private Connection conn;
-    /**
-     * Creates a new instance of PostResource
-     */
+    
     public PostResource() {
     }
 
-    /**
-     * Retrieves representation of an instance of com.paths.PostResource
-     * @return an instance of java.lang.String
-     */
-    @POST
+    
+    @POST//κάνει handle request τύπου post
     @Produces(MediaType.APPLICATION_JSON)
     public Response getJson(String jsonData,@HeaderParam("option") String option) 
     {
@@ -60,14 +55,14 @@ public class PostResource {
             module.addDeserializer(Date.class, new JsonDateDeserializer());
             mapper.registerModule(module);
             
-            RestMessage rest = mapper.readValue(jsonData, RestMessage.class);
+            RestMessage rest = mapper.readValue(jsonData, RestMessage.class);//δοκιμάζει να μετατρέπει το json σε Date
             
-            EstablishDbConnection();
+            EstablishDbConnection();//κάνει σύνδεση
             System.out.println(rest);
             
             
             switch(option)
-            {
+            {//καλέι ανάλογα με την επιλογή
                 case "register":
                     return register(rest);
                 case "addFriend":
@@ -96,7 +91,7 @@ public class PostResource {
     {
         System.out.println("Calling register");
         try 
-        {
+        {//κάνει register τον χρήστη
             String message = "INSERT INTO users (name ,surname ,username ,birthday ,gender ,description ,country , city) VALUES ('" + msg.getName() + "','" + msg.getSurname() + "','" + msg.getUsername() + "','" + msg.getDate() + "','" + msg.getGender() + "','" + msg.getDescription() + "','" + msg.getCountry() + "','" + msg.getCity() + "')";
             System.out.println("Query executed : " + message);
             stat.executeUpdate(message);
@@ -105,9 +100,9 @@ public class PostResource {
             {
                 System.out.println(a.getString("name"));
             }
-            DestroyDbConnection();
+            DestroyDbConnection();//κλήνει την σύνδεση
             String responseMessage = "User created";
-            return Response.status(Response.Status.CREATED).entity(responseMessage).build();
+            return Response.status(Response.Status.CREATED).entity(responseMessage).build();//επιστρέφει απάντηση
         } 
         catch (SQLException ex) 
         {
@@ -117,12 +112,12 @@ public class PostResource {
     
     public Response addFriend(RestMessage msg)
     {
-        try {
+        try {//παρομοίως sql ερώτημα για να προσθέση φίλο
             String message = "INSERT INTO friends (friend_send ,friends_username) VALUES ('" + msg.getName() + "','" + msg.getUser_received()+ "')";
             stat.executeUpdate(message);
             System.out.println("Query executed : " + message);
             
-            DestroyDbConnection();
+            DestroyDbConnection();//κλήνει την σύνδεση
             String responseMessage = "Friend added";
             return Response.status(Response.Status.CREATED).entity(responseMessage).build();
 
@@ -135,7 +130,7 @@ public class PostResource {
     }
     
     public Response createPost(RestMessage msg)
-    {
+    {//κάνει δημιουργεία νέου post
         System.out.println("Calling createPOst");
         try 
         {
@@ -151,21 +146,21 @@ public class PostResource {
     }
     
     public void EstablishDbConnection() throws ClassNotFoundException, SQLException
-    {
+    {//σύνδεση στη βάση
         Class.forName("org.sqlite.JDBC");
         conn = DriverManager.getConnection("jdbc:sqlite:chat.db");
         stat = conn.createStatement();
     }
     
     public void DestroyDbConnection() throws SQLException
-    {
+    {//κλήνει την σύνδεση
         stat.close();
         conn.close();
     }
     
     public void DropTable()
     {
-        try {
+        try {//κάνει drop και δημιουργεία όλα τα tables
             stat.executeUpdate("DROP table if exists users;");
             stat.executeUpdate("DROP table if exists posts;");
             stat.executeUpdate("DROP table if exists friends;");
