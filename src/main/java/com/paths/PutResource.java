@@ -82,7 +82,7 @@ public class PutResource {
     {
         try {//sql ερώτημα για update profile
             String message = "UPDATE users SET name='" + msg.getName() + "', surname='" + msg.getSurname() + "', username='" + msg.getUsername() + "', birthday='" + msg.getDate() + "', gender='" + msg.getGender() + "', description='" + msg.getDescription() + "', country='" + msg.getCountry() + "', city='" + msg.getCity() + "' WHERE name='" + friends_name + "'";
-            String message2 = "UPDATE friends SET friends_username='" + msg.getUsername() + "' WHERE friend_send='" + name + "'";
+            String message2 = "UPDATE friends SET friends_username='" + msg.getUsername() + "' WHERE friend_send='" + name + "' AND friends_username='"+ friends_name + "'";
             stat.executeUpdate(message); 
             stat.executeUpdate(message2); 
             System.out.println("Query executed : " + message);
